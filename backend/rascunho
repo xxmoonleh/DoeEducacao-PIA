@@ -1,0 +1,6 @@
+app.post('/pessoa', async (req,res)=>{
+    return res.json(req)
+    const{nome, email} = req.body
+    const [query]= await connection.execute('insert into TestePessoa.Pessoa (nome,email) values(?,?)',[nome,email])
+    return query
+})
