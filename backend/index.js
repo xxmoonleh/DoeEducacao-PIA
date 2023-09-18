@@ -1,8 +1,9 @@
 const { json } = require('express');
 const express = require('express');
 const app = express();
+app.use(express.urlencoded({ extended: true}));
 app.use(express.json())
-app.listen(9000, () => console.log("OK"));
+app.listen(9000, () => console. log("OK"));
 
 const mysql = require('mysql2/promise')
 const connection = mysql.createPool({
@@ -29,6 +30,19 @@ app.get('/pessoa', async (req,res)=>{
 app.get('/pessoa:id', async (req,res)=>{
     const {id} = req.params;
     const [query] = await connection.execute('select * from testepessoa.pessoa where id = ?', [id]);
-    if(query.lenght === 0) return res.status(400).json({mensagem: 'Não Encontrado.'})
+    if(query.length === 0) return res.status(400).json({mensagem: 'Não Encontrado.'})
+    return res.status(200).json(query);
+})
+
+app.get('/pessoa/busca/:nome', async (req,res)=>{
+    const {nome} = req.params;
+    const [query] = await connection.execute('select * from testepessoa.pessoa where nome like '%x%'', [nome]);
+    if(query.length === 0) return res.status(400).json({mensagem: 'Não Encontrado.'})
+    return res.status(200).json(query);
+})
+
+app.post('/pessoa', async (req,res)=>{
+    const{nome, email} = req.body;
+    const [query]= await connection.execute('insert into TestePessoa.Pessoa (nome,email) values(?,?)',[nome,email])
     return res.status(200).json(query);
 })
