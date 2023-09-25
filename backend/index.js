@@ -17,24 +17,21 @@ app.get('/',(req,res)=>{
     res.send("Helicia");
 });
 
-const getAllPessoas = async () =>{
-    const [query] = await connection.execute('select * from doeeducacao.doador');
-    return query;
-}
 
-app.get('/pessoa', async (req,res)=>{
-    const consulta = await getAllPessoas();
-    return res.status(200).json(consulta);
+
+app.get('/doador', async (req,res)=>{
+    const [query] = await connection.execute('select * from doeeducacao.doador');
+    return res.status(200).json(query);
 })
 
-app.get('/pessoa:id', async (req,res)=>{
+app.get('/doador:id', async (req,res)=>{
     const {id} = req.params;
     const [query] = await connection.execute('select * from doeeducacao.doador where id = ?', [id]);
     if(query.length === 0) return res.status(400).json({mensagem: 'Não Encontrado.'})
     return res.status(200).json(query);
 })
 
-app.get('/pessoa/nome/:busca', async (req, res) => {
+app.get('/doador/nome/:busca', async (req, res) => {
     const { busca } = req.params;
     
     const [query] = await connection.execute('SELECT * FROM doeeducacao.doador WHERE nome LIKE ?', [`%${busca}%`]);
@@ -47,18 +44,12 @@ app.get('/pessoa/nome/:busca', async (req, res) => {
 });
 
 
-app.post('/pessoa', async (req,res)=>{
-    const{nome, email} = req.body;
-    const [query]= await connection.execute('insert into doeeducacao.doador (nome,email) values(?,?)',[nome,email])
-    return res.status(200).json(query);
-})
-
-app.post('/pessoa', async (req, res) => {
+app.post('/doador', async (req, res) => {
     try {
-        const { nome, email } = req.body; // Suponha que o cliente envie o nome e a idade no corpo da requisição
+        const { nome, email, endereco, cpf, nascimento, cep, cidade, estado, bairro, rua, numero, complemento } = req.body; // Suponha que o cliente envie o nome e a idade no corpo da requisição
 
         // Realize a inserção no banco de dados
-        const [result] = await connection.execute('INSERT INTO doeeducacao.doador (nome, email) VALUES (?, ?)', [nome, email]);
+        const [result] = await connection.execute('INSERT INTO doeeducacao.doador (nome, email, endereco, cpf, nascimento, cep, cidade, estado, bairro, rua, numero, complemento) VALUES (?, ?)', [nome, email, endereco, cpf, nascimento, cep, cidade, estado, bairro, rua, numero, complemento]);
 
         // Verifique se a inserção foi bem-sucedida
         if (result.affectedRows === 1) {
@@ -71,7 +62,7 @@ app.post('/pessoa', async (req, res) => {
     }
 });
 
-app.put('/pessoa/:id', async (req, res) => {
+app.put('/doador/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { nome, email } = req.body; // Suponha que o cliente envie os novos dados no corpo da requisição
@@ -97,7 +88,7 @@ app.put('/pessoa/:id', async (req, res) => {
     }
 });
 
-app.delete('/pessoa/:id', async (req, res) => {
+app.delete('/doador/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
