@@ -91,7 +91,7 @@ app.post('/doador', async (req, res) => {
 
 
 app.put('/doador/:id', async (req, res) => {
-    try {
+   // try {
         const { id } = req.params;
         const { nome, email } = req.body; // Suponha que o cliente envie os novos dados no corpo da requisição
 
@@ -123,16 +123,16 @@ app.put('/doador/:id', async (req, res) => {
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível atualizar a pessoa.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+   // } catch (error) {
+    //    return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+    //}
 });
 
 
 
 
 app.delete('/doador/:id', async (req, res) => {
-    try {
+   // try {
         const { id } = req.params;
 
 
@@ -163,9 +163,9 @@ app.delete('/doador/:id', async (req, res) => {
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível excluir a pessoa.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+   // } catch (error) {
+       // return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+   // }
 });
 
 
@@ -235,7 +235,7 @@ app.post('/doacao', async (req, res) => {
 
 
 app.put('/doacao/:id', async (req, res) => {
-    try {
+   // try {
         const { id } = req.params;
         const { doador_id, user_sistema_id } = req.body;
 
@@ -265,16 +265,16 @@ app.put('/doacao/:id', async (req, res) => {
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível atualizar a doacao.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+   // } catch (error) {
+    //    return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+   // }
 });
 
 
 
 
 app.delete('/doacao/:id', async (req, res) => {
-    try {
+    //try {
         const { id } = req.params;
 
 
@@ -303,9 +303,9 @@ app.delete('/doacao/:id', async (req, res) => {
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível excluir a doacao.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+   // } catch (error) {
+       // return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+  //  }
 });
 
 
@@ -377,7 +377,7 @@ app.post('/campanha', async (req, res) => {
 
 
 app.put('/campanha/:id', async (req, res) => {
-    try {
+  //  try {
         const { id } = req.params;
         const { nome, data_inicio } = req.body;
 
@@ -407,16 +407,16 @@ app.put('/campanha/:id', async (req, res) => {
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível atualizar a campanha.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+   // } catch (error) {
+      //  return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+  //  }
 });
 
 
 
 
-app.delete('/doador/:id', async (req, res) => {
-    try {
+app.delete('/campanha/:id', async (req, res) => {
+   // try {
         const { id } = req.params;
 
 
@@ -444,105 +444,152 @@ app.delete('/doador/:id', async (req, res) => {
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível excluir a campanha.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+   // } catch (error) {
+     //   return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+  //  }
 });
 
 
 // user_sistema
 
 
-// Listar todos
-app.get('/user_sistema', async (req, res) => {
-    try {
-        const [query] = await connection.execute('SELECT * FROM doeeducacao.doador');
-        return res.status(200).json(query);
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+app.get('/user_sistema', async (req,res)=>{
+    const [query] = await connection.execute('select * from doeeducacao.user_sistema');
+    return res.status(200).json(query);
+})
+
+
+app.get('/user_sistema:id', async (req,res)=>{
+    const {id} = req.params;
+    const [query] = await connection.execute('select * from doeeducacao.user_sistema where id = ?', [id]);
+    if(query.length === 0) return res.status(400).json({mensagem: 'Não Encontrado.'})
+    return res.status(200).json(query);
+})
+
+
+
+
+app.get('/user_sistema/nome/:busca', async (req, res) => {
+    const { busca } = req.params;
+   
+    const [query] = await connection.execute('SELECT * FROM doeeducacao.user_sistema WHERE nome LIKE ?', [`%${busca}%`]);
+   
+    if (query.length === 0) {
+        return res.status(400).json({ mensagem: 'Não Encontrado.' });
     }
+   
+    return res.status(200).json(query);
 });
 
 
-// Exibir por ID
-app.get('/user_sistema/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const [query] = await connection.execute('SELECT * FROM doeeducacao.doador WHERE id = ?', [id]);
-        if (query.length === 0) return res.status(404).json({ mensagem: 'Pessoa não encontrada.' });
-        return res.status(200).json(query);
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
-});
 
 
-// Buscar por parte do nome
-app.get('/user_sistema/buscar/:nome', async (req, res) => {
-    try {
-        const { nome } = req.params;
-        const [query] = await connection.execute('SELECT * FROM doeeducacao.doador WHERE nome LIKE ?', [`%${nome}%`]);
-        if (query.length === 0) return res.status(404).json({ mensagem: 'Nenhuma pessoa encontrada.' });
-        return res.status(200).json(query);
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
-});
 
 
-// Inserir
+
+
 app.post('/user_sistema', async (req, res) => {
-    try {
-        const { nome, email, endereco, cpf, nascimento, cep, cidade, estado, bairro, rua, numero, complemento } = req.body;
-        const [result] = await connection.execute('INSERT INTO doeeducacao.doador (nome, email, endereco, cpf, nascimento, cep, cidade, estado, bairro, rua, numero, complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [nome, email, endereco, cpf, nascimento, cep, cidade, estado, bairro, rua, numero, complemento]);
+    //try {
+        const { nome, email, endereco, cpf, nascimento, cep, senha } = req.body; // Suponha que o cliente envie o nome e a idade no corpo da requisição
+
+
+
+
+        // Realize a inserção no banco de dados
+        const [result] = await connection.execute('INSERT INTO doeeducacao.user_sistema (nome, email, endereco, cpf, nascimento, cep, senha) VALUES (?, ?, ?, ?, ?, ?, ?)', [nome, email, endereco, cpf, nascimento, cep, senha]);
+
+
+
+
+        // Verifique se a inserção foi bem-sucedida
         if (result.affectedRows === 1) {
             return res.status(201).json({ mensagem: 'Pessoa inserida com sucesso.' });
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível inserir a pessoa.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+    //} catch (error) {
+    //    return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+   // }
 });
 
 
-// Alterar
+
+
 app.put('/user_sistema/:id', async (req, res) => {
-    try {
+   // try {
         const { id } = req.params;
-        const { nome, email } = req.body;
-        const [existingPerson] = await connection.execute('SELECT * FROM doeeducacao.doador WHERE id = ?', [id]);
+        const { nome, email } = req.body; // Suponha que o cliente envie os novos dados no corpo da requisição
+
+
+
+
+        // Verifique se a pessoa existe no banco de dados antes de tentar a atualização
+        const [existingPerson] = await connection.execute('SELECT * FROM doeeducacao.user_sistema WHERE id = ?', [id]);
+
+
+
+
         if (existingPerson.length === 0) {
-            return res.status(404).json({ mensagem: 'Pessoa não encontrada.' });
+            return res.status(400).json({ mensagem: 'Pessoa não encontrada.' });
         }
+
+
+
+
+        // Atualize os dados da pessoa no banco de dados
         const [result] = await connection.execute('UPDATE doeeducacao.doador SET nome = ?, email = ? WHERE id = ?', [nome, email, id]);
+
+
+
+
+        // Verifique se a atualização foi bem-sucedida
         if (result.affectedRows === 1) {
             return res.status(200).json({ mensagem: 'Pessoa atualizada com sucesso.' });
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível atualizar a pessoa.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+   // } catch (error) {
+    //    return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+    //}
 });
 
 
-// Excluir
+
+
 app.delete('/user_sistema/:id', async (req, res) => {
-    try {
+   // try {
         const { id } = req.params;
-        const [existingPerson] = await connection.execute('SELECT * FROM doeeducacao.doador WHERE id = ?', [id]);
+
+
+
+
+        // Verifique se a pessoa existe no banco de dados antes de tentar a exclusão
+        const [existingPerson] = await connection.execute('SELECT * FROM doeeducacao.user_sistema WHERE id = ?', [id]);
+
+
+
+
         if (existingPerson.length === 0) {
-            return res.status(404).json({ mensagem: 'Pessoa não encontrada.' });
+            return res.status(400).json({ mensagem: 'Pessoa não encontrada.' });
         }
-        const [result] = await connection.execute('DELETE FROM doeeducacao.doador WHERE id = ?', [id]);
+
+
+
+
+        // Exclua a pessoa do banco de dados
+        const [result] = await connection.execute('DELETE FROM doeeducacao.user_sistema WHERE id = ?', [id]);
+
+
+
+
+        // Verifique se a exclusão foi bem-sucedida
         if (result.affectedRows === 1) {
             return res.status(200).json({ mensagem: 'Pessoa excluída com sucesso.' });
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível excluir a pessoa.' });
         }
-    } catch (error) {
-        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-    }
+   // } catch (error) {
+       // return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+   // }
 });
 
