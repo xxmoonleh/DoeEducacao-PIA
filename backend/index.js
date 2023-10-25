@@ -13,7 +13,8 @@ const connection = mysql.createPool({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: ''
+    password: '',
+    database: "doeeducacao"
 })
 
 
@@ -66,7 +67,7 @@ app.get('/doador/nome/:busca', async (req, res) => {
 app.post('/doador', async (req, res) => {
     //try {
         const { nome, email, endereco, cpf, nascimento, cep, cidade, estado, bairro, rua, numero, complemento } = req.body; // Suponha que o cliente envie o nome e a idade no corpo da requisição
-
+        console.log(req.body)
 
 
 
@@ -209,13 +210,13 @@ app.get('/doacao/nome/:busca', async (req, res) => {
 
 app.post('/doacao', async (req, res) => {
     //try {
-        const { valor, doador_id, user_sistema_id, forma_paga, status } = req.body;
+        const { valor, doador_id, campanha_id, forma_paga, status } = req.body;
 
 
 
 
         // Realize a inserção no banco de dados
-        const [result] = await connection.execute('INSERT INTO doeeducacao.doacao (valor, doador_id, user_sistema_id, forma_paga, status) VALUES (?, ?, ?, ?, ?)', [valor, doador_id, user_sistema_id, forma_paga, status]);
+        const [result] = await connection.execute('INSERT INTO doeeducacao.doacao (valor, doador_id, campanha_id, forma_paga, status) VALUES (?, ?, ?, ?, ?)', [valor, doador_id, campanha_id, forma_paga, status]);
 
 
 
@@ -237,7 +238,7 @@ app.post('/doacao', async (req, res) => {
 app.put('/doacao/:id', async (req, res) => {
    // try {
         const { id } = req.params;
-        const { doador_id, user_sistema_id } = req.body;
+        const { doador_id, campanha_id } = req.body;
 
 
 
@@ -254,7 +255,7 @@ app.put('/doacao/:id', async (req, res) => {
 
 
 
-        const [result] = await connection.execute('UPDATE doeeducacao.doacao SET doador_id = ?, doador_id = ? WHERE id = ?', [doador_id, user_sistema_id, id]);
+        const [result] = await connection.execute('UPDATE doeeducacao.doacao SET doador_id = ?, doador_id = ? WHERE id = ?', [doador_id, campanha_id, id]);
 
 
 
