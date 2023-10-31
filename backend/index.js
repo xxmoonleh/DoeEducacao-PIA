@@ -1,6 +1,8 @@
 const { json } = require('express');
 const express = require('express');
 const app = express();
+const cors = require('cors')
+app.use(cors())
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json())
 app.listen(9000, () => console. log("OK"));
@@ -30,7 +32,8 @@ app.get('/',(req,res)=>{
 
 
 app.get('/doador', async (req,res)=>{
-    const [query] = await connection.execute('select * from doeeducacao.doador');
+    const [query] = await connection.execute('select * from doador');
+    console.log(query);
     return res.status(200).json(query);
 })
 
