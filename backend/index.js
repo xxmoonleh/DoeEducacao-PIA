@@ -212,17 +212,19 @@ app.get('/doacao/nome/:busca', async (req, res) => {
 
 
 app.post('/doacao', async (req, res) => {
-    //try {
-        const { valor, doador_id, campanha_id, forma_paga, status } = req.body;
+    try {
+        const { valor, doador_id, forma_paga, status } = req.body;
 
-
-
+        // Verificar se todos os campos obrigatórios estão presentes
+        if (!valor || !doador_id || !forma_paga || !status) {
+            return res.status(400).json({ mensagem: 'Todos os campos são obrigatórios.' });
+        }
 
         // Realize a inserção no banco de dados
-        const [result] = await connection.execute('INSERT INTO doeeducacao.doacao (valor, doador_id, campanha_id, forma_paga, status) VALUES (?, ?, ?, ?, ?)', [valor, doador_id, campanha_id, forma_paga, status]);
-
-
-
+        const [result] = await connection.execute(
+            'INSERT INTO doeeducacao.doacao (valor, doador_id, forma_paga, status) VALUES (?, ?, ?, ?)',
+            [valor, doador_id, forma_paga, status]
+        );
 
         // Verifique se a inserção foi bem-sucedida
         if (result.affectedRows === 1) {
@@ -230,9 +232,10 @@ app.post('/doacao', async (req, res) => {
         } else {
             return res.status(400).json({ mensagem: 'Não foi possível inserir a doacao.' });
         }
-    //} catch (error) {
-    //    return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
-   // }
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+    }
 });
 
 
